@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-// Implementación de la interfaz remota Registro
+
 public class RegistroImpl extends UnicastRemoteObject implements Registro {
     
-    // Almacena los estudiantes: ID -> Estudiante
     private Map<String, Estudiante> estudiantes;
     private Random random;
     
-    // Clase interna para representar un estudiante
     private static class Estudiante {
         String id;
         String nombre;
@@ -30,104 +28,72 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         @Override
         public String toString() {
             return String.format(
-                "INFORMACIÓN DEL ESTUDIANTE\n" +
-                "ID: %s\n" +
-                "Nombre: %s\n" +
-                "Carrera: %s\n" +
-                "Semestre: %d\n" +
-                "Correo: %s\n" +
+                "INFORMACIÓN DEL ESTUDIANTE: \n" + "ID: %s\n" +"Nombre: %s\n" +"Carrera: %s\n" +"Semestre: %d\n" + "Correo: %s\n" +
                 id, nombre, carrera, semestre, correo
             );
         }
     }
-    
-    // Constructor de la implementación
+
     public RegistroImpl() throws RemoteException {
         super();
         this.estudiantes = new HashMap<>();
         this.random = new Random();
     }
     
-    // Genera un ID único aleatorio de 8 caracteres
     private synchronized String generarIDUnico() {
         String id;
         do {
-            // Genera un ID alfanumérico de 8 caracteres
             StringBuilder sb = new StringBuilder();
-            String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            String caracteres = "MNBVUWOIWHI098765";
             for (int i = 0; i < 8; i++) {
                 int index = random.nextInt(caracteres.length());
                 sb.append(caracteres.charAt(index));
             }
             id = sb.toString();
-        } while (estudiantes.containsKey(id)); // Asegura que sea único
+        } while (estudiantes.containsKey(id));
         
         return id;
     }
     
-    // Registra un nuevo estudiante en el sistema
     public String registrarEstudiante(String nombre, String carrera, int semestre, String correo) throws RemoteException {
-        // Validaciones
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return "Error: El nombre no puede estar vacío.";
+        if (nombre == null) {
+            return "Ingresa un nombre valido";
         }
-        
-        if (carrera == null || carrera.trim().isEmpty()) {
-            return "Error: La carrera no puede estar vacía.";
+        if (carrera == null) {
+            return "Ingresa una carrera valida";
         }
-        
-        if (semestre < 1 || semestre > 12) {
-            return "Error: El semestre debe estar entre 1 y 12.";
+        if (semestre < 1 || semestre > 5) {
+            return "El semestre debe ser un numero del 1 al 5";
         }
-        
-        if (correo == null || !correo.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            return "Error: El correo electrónico no es válido.";
+        if (correo == null) {
+            return "Ingresa un correo valido (por ejemplo distribuidas@gmail.com)";
         }
-        
-        // Verifica si el correo ya está registrado
+
         for (Estudiante est : estudiantes.values()) {
             if (est.correo.equalsIgnoreCase(correo)) {
-                return "Error: El correo electrónico ya está registrado con ID: " + est.id;
+                return "Ya existe ese correo electronico " + est.id;
             }
         }
-        
-        // Genera ID único
         String id = generarIDUnico();
-        
-        // Crea y guarda el estudiante
-        Estudiante nuevoEstudiante = new Estudiante(id, nombre.trim(), carrera.trim(), semestre, correo.trim());
+        Estudiante nuevoEstudiante = new Estudiante(id, nombre, carrera, semestre, correo);
         estudiantes.put(id, nuevoEstudiante);
-        
-        System.out.println("Estudiante registrado exitosamente con ID: " + id);
-        
-        return String.format(
-            "Estudiante registrado correctamente.\n" +
-            "ID asignado: %s\n" +
-            "Nombre: %s\n" +
-            "Carrera: %s\n" +
-            "Semestre: %d\n" +
-            "Correo: %s\n" +
-            "¡Guarda tu ID para futuras consultas!",
-            id, nombre.trim(), carrera.trim(), semestre, correo.trim()
-        );
+        String mensaje = "Estudiante registrado correctamente";
+        return mensaje;
     }
     
-    // Busca un estudiante por su ID
     public String buscarEstudiantePorID(String id) throws RemoteException {
-        // Validaciones
-        if (id == null || id.trim().isEmpty()) {
-            return "Error: El ID no puede estar vacío.";
+
+        if (id == null) {
+            return "Ingresa un ID valido";
         }
-        
-        String idBuscar = id.trim().toUpperCase();
-        Estudiante estudiante = estudiantes.get(idBuscar);
+        Estudiante estudiante = estudiantes.get(id);
         
         if (estudiante == null) {
-            System.out.println("Búsqueda fallida: ID " + idBuscar + " no encontrado");
-            return "Estudiante no encontrado.\nEl ID " + idBuscar + " no existe en el sistema.";
+            System.out.println(id + " no encontrado");
+            //return "Estudiante no encontrado.\nEl ID " + id + " no existe en el sistema.";
         }
         
-        System.out.println("Búsqueda exitosa: ID " + idBuscar);
+        System.out.println("Estudiante encontrado: " + id);
         return estudiante.toString();
     }
 }
