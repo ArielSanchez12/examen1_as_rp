@@ -102,7 +102,7 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         String id = generarIDUnico();
         Estudiante nuevoEstudiante = new Estudiante(id, nombre, carrera, semestre, correo);
         estudiantes.add(nuevoEstudiante);
-        String mensaje = "Estudiante registrado correctamente";
+        String mensaje = "Estudiante registrado correctamente con ID: " + id;
         return mensaje;
     }
     

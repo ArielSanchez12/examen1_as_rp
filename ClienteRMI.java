@@ -12,7 +12,7 @@ public class ClienteRMI {
         Scanner scanner = new Scanner(System.in);
         
         try {
-            System.out.println("Conectando al servidor en " + HOST + ":" + PUERTO);
+            System.out.println("Conexión exitosa al servidor: " + HOST + ":" + PUERTO);
             Registry registry = LocateRegistry.getRegistry(HOST, PUERTO);
             Registro registro = (Registro) registry.lookup(NOMBRE_SERVICIO);
             System.out.println();
