@@ -43,7 +43,7 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         String id;
         do {
             StringBuilder sb = new StringBuilder();
-            String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            String caracteres = "QWERTYUIOP1234567890";
             for (int i = 0; i < 8; i++) {
                 int index = random.nextInt(caracteres.length());
                 sb.append(caracteres.charAt(index));
@@ -115,10 +115,9 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         Estudiante estudiante = buscarPorID(id);
         
         if (estudiante == null) {
-            System.out.println(id + " no encontrado");
-            return "Estudiante no encontrado.\nEl ID " + id + " no existe en el sistema.";
+            String mensaje = "ID no encontrado" + id;
+            return mensaje;
         }
-        
         System.out.println("Estudiante encontrado: " + id);
         return estudiante.toString();
     }
