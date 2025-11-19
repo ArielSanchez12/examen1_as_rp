@@ -1,13 +1,12 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Random;
 
 
 public class RegistroImpl extends UnicastRemoteObject implements Registro {
     
-    private Map<String, Estudiante> estudiantes;
+    private ArrayList<Estudiante> estudiantes;
     private Random random;
     
     private static class Estudiante {
@@ -36,7 +35,7 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
 
     public RegistroImpl() throws RemoteException {
         super();
-        this.estudiantes = new HashMap<>();
+        this.estudiantes = new ArrayList<>();
         this.random = new Random();
     }
     
@@ -44,15 +43,42 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         String id;
         do {
             StringBuilder sb = new StringBuilder();
-            String caracteres = "MNBVUWOIWHI098765";
+            String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             for (int i = 0; i < 8; i++) {
                 int index = random.nextInt(caracteres.length());
                 sb.append(caracteres.charAt(index));
             }
             id = sb.toString();
-        } while (estudiantes.containsKey(id));
+        } while (existeID(id));
         
         return id;
+    }
+    
+    private boolean existeID(String id) {
+        for (int i = 0; i < estudiantes.size(); i++) {
+            if (estudiantes.get(i).id.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Estudiante buscarPorID(String id) {
+        for (int i = 0; i < estudiantes.size(); i++) {
+            if (estudiantes.get(i).id.equals(id)) {
+                return estudiantes.get(i);
+            }
+        }
+        return null;
+    }
+    
+    private boolean existeCorreo(String correo) {
+        for (int i = 0; i < estudiantes.size(); i++) {
+            if (estudiantes.get(i).correo.equalsIgnoreCase(correo)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public String registrarEstudiante(String nombre, String carrera, int semestre, String correo) throws RemoteException {
@@ -69,14 +95,13 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
             return "Ingresa un correo valido (por ejemplo distribuidas@gmail.com)";
         }
 
-        for (Estudiante est : estudiantes.values()) {
-            if (est.correo.equalsIgnoreCase(correo)) {
-                return "Ya existe ese correo electronico " + est.id;
-            }
+        if (existeCorreo(correo)) {
+            return "Ya existe ese correo electronico";
         }
+        
         String id = generarIDUnico();
         Estudiante nuevoEstudiante = new Estudiante(id, nombre, carrera, semestre, correo);
-        estudiantes.put(id, nuevoEstudiante);
+        estudiantes.add(nuevoEstudiante);
         String mensaje = "Estudiante registrado correctamente";
         return mensaje;
     }
@@ -86,11 +111,12 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         if (id == null) {
             return "Ingresa un ID valido";
         }
-        Estudiante estudiante = estudiantes.get(id);
+        
+        Estudiante estudiante = buscarPorID(id);
         
         if (estudiante == null) {
             System.out.println(id + " no encontrado");
-            //return "Estudiante no encontrado.\nEl ID " + id + " no existe en el sistema.";
+            return "Estudiante no encontrado.\nEl ID " + id + " no existe en el sistema.";
         }
         
         System.out.println("Estudiante encontrado: " + id);

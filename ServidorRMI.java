@@ -3,7 +3,7 @@ import java.rmi.registry.Registry;
 
 public class ServidorRMI {
     
-    private static int PUERTO = 1099;
+    private static int PUERTO = 4000;
     private static String NOMBRE_SERVICIO = "RegistroEstudiantes";
     
     public static void main(String[] args) {
