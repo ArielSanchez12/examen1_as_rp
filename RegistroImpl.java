@@ -115,10 +115,10 @@ public class RegistroImpl extends UnicastRemoteObject implements Registro {
         Estudiante estudiante = buscarPorID(id);
         
         if (estudiante == null) {
-            String mensaje = "ID no encontrado" + id;
+            String mensaje = "ID no encontrado: " + id;
             return mensaje;
         }
-        System.out.println("Estudiante encontrado: " + id);
+        System.out.println("Estudiante encontrado: " + id + "\n"+ estudiante.toString());
         return estudiante.toString();
     }
 }
